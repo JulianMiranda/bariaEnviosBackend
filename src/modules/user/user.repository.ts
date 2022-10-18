@@ -106,12 +106,16 @@ export class UserRepository {
           },
         ]);
 
-      const { role } = rest;
+      const { role, name } = rest;
       if (role) {
         const { firebaseId, _id } = document;
         const claims = { role, mongoId: _id };
         FirebaseService.setName(firebaseId);
         FirebaseService.setClaims(firebaseId, claims);
+      }
+      if (name) {
+        const { firebaseId } = document;
+        FirebaseService.setName(firebaseId);
       }
 
       if (!document)
