@@ -92,6 +92,7 @@ export class UserRepository {
         .findOneAndUpdate({ _id: id }, { ...rest, ...newImage }, { new: true })
         .select({
           name: true,
+          phone: true,
           email: true,
           image: true,
           role: true,
