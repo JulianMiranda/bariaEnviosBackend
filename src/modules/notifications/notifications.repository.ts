@@ -136,8 +136,6 @@ export class NotificationsRepository {
     userId: string,
   ): Promise<any> {
     try {
-      console.log('Haciendo');
-
       const usersJUN = await this.usersDb
         .find({ role: 'JUN' }, { notificationTokens: 1 })
         .lean();
@@ -189,9 +187,12 @@ export class NotificationsRepository {
           token,
         }));
       });
-
-      FirebaseService.sendPushNotifications(flatten(pushNotifications));
-      FirebaseService.sendPushNotifications(flatten(pushNotificationsUser));
+      if (userOrder) {
+        FirebaseService.sendPushNotifications(flatten(pushNotificationsUser));
+      }
+      if (usersJUN.length !== 0) {
+        FirebaseService.sendPushNotifications(flatten(pushNotifications));
+      }
 
       /*
 
