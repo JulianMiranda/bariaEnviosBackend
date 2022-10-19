@@ -130,17 +130,70 @@ export class NotificationsRepository {
     }
   }
 
-  async newOrder(type: NOTIFICATION, order: string): Promise<any> {
+  async newOrder(
+    type: NOTIFICATION,
+    order: string,
+    userId: string,
+  ): Promise<any> {
     try {
       console.log('Haciendo');
-
-      /* const orderDB = await this.orderDb
-        .findOne({ _id: order }, { cost: 1 })
-        .lean();
 
       const usersJUN = await this.usersDb
         .find({ role: 'JUN' }, { notificationTokens: 1 })
         .lean();
+      const userOrder = await this.usersDb
+        .findOne({ _id: userId }, { notificationTokens: 1 })
+        .lean();
+      const notificationsArray = [];
+      const notificationsArrayUser = [];
+
+      for (const user of usersJUN) {
+        notificationsArray.push({
+          user: user._id,
+          title: 'Nueva Orden',
+          body: `Nueva orden de ${user.phone} $`,
+          type,
+          identifier: order,
+          notificationTokens: user.notificationTokens,
+        });
+      }
+
+      notificationsArrayUser.push({
+        user: userOrder._id,
+        title: 'Orden Confirmada',
+        body: `Tu compra estará siendo procesada de inmediato`,
+        type,
+        identifier: order,
+        notificationTokens: userOrder.notificationTokens,
+      });
+
+      const pushNotifications = notificationsArray.map((item) => {
+        const { title, email, user, body } = item;
+        return item.notificationTokens.map((token: string) => ({
+          notification: {
+            title,
+            body,
+          },
+
+          token,
+        }));
+      });
+      const pushNotificationsUser = notificationsArrayUser.map((item) => {
+        const { title, email, user, body } = item;
+        return item.notificationTokens.map((token: string) => ({
+          notification: {
+            title,
+            body,
+          },
+
+          token,
+        }));
+      });
+
+      FirebaseService.sendPushNotifications(flatten(pushNotifications));
+      FirebaseService.sendPushNotifications(flatten(pushNotificationsUser));
+
+      /*
 
       if (usersJUN.length === 0) return;
 

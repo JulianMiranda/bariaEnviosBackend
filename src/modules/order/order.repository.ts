@@ -130,6 +130,7 @@ export class OrderRepository {
         await this.notificationsRepository.newOrder(
           NOTIFICATION.ORDER,
           document._id,
+          userId,
         );
         /* SendGridService.sendGrid(document, user).catch((err) =>
           console.log(err),
