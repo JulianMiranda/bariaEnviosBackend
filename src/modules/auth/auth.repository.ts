@@ -32,6 +32,7 @@ export class AuthRepository {
             theme: true,
             phone: true,
             reciveNotifications: true,
+            notificationTokens: true,
           })
           .populate([
             {
@@ -76,6 +77,7 @@ export class AuthRepository {
           theme: true,
           phone: true,
           reciveNotifications: true,
+          notificationTokens: true,
         })
         .populate([
           {
