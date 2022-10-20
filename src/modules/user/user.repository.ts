@@ -67,17 +67,15 @@ export class UserRepository {
     image: Partial<Image>,
   ): Promise<User> {
     try {
-      const { ...rest } = data;
-      /*      	if (notificationTokens) { */
-      /*   const notificationStored = await this.userDb.findById(id,{notificationTokens: true})
-          notificationStored.notificationTokens.map(token =>) */
-      /* 	await this.userDb.findOneAndUpdate(
-					{_id: id},
-					{$addToSet: {notificationTokens: a }},
-				); */
-      /* await this.userDb.populate(setNotificationToken(id,notificationTokens)) */
+      const { notificationTokens, ...rest } = data;
 
-      /* 		} */
+      if (notificationTokens) {
+        await this.userDb.findOneAndUpdate(
+          { _id: id },
+          // @ts-ignore: Unreachable code error
+          { $addToSet: { notificationTokens } },
+        );
+      }
 
       let newImage = {};
       if (image) {
