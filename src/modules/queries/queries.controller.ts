@@ -59,4 +59,10 @@ export class QueriesController {
   test(@Req() req: any): Promise<any> {
     return this.queriesRepository.test(req.user.id);
   }
+
+  @UseGuards(AuthenticationGuard)
+  @Get('/notificationAllUsers')
+  notificationAllUsers(): Promise<any> {
+    return this.queriesRepository.notificationAllUsers();
+  }
 }

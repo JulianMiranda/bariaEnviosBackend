@@ -4,6 +4,8 @@ import { Model, Promise } from 'mongoose';
 import { Category } from 'src/dto/category.dto';
 import { MongoQuery } from 'src/dto/mongo-query.dto';
 import { Subcategory } from 'src/dto/subcategory.dto';
+import { NOTIFICATION } from 'src/enums/notification.enum';
+import { NotificationsRepository } from '../notifications/notifications.repository';
 import { mostSaleLastMonth } from './aggregations/most-sale-last-month';
 import { recentCategories } from './aggregations/recent-categories';
 import { RecommendedCategories } from './aggregations/recommended-categories';
@@ -17,6 +19,7 @@ export class QueriesRepository {
     @InjectModel('Category') private categoryDb: Model<Category>,
     @InjectModel('Order') private orderDb: Model<any>,
     @InjectModel('CategoryAnalytics') private categoryAnalyticsDb: Model<any>,
+    private notificationsRepository: NotificationsRepository,
   ) {}
 
   async getHome(data: any): Promise<any> {
@@ -154,6 +157,14 @@ export class QueriesRepository {
   async test(userId: string): Promise<any> {
     try {
       return this.categoryDb.aggregate(Test(userId));
+    } catch (e) {
+      throw new InternalServerErrorException('test query error', e);
+    }
+  }
+
+  async notificationAllUsers(): Promise<any> {
+    try {
+      return await this.notificationsRepository.allUsers(NOTIFICATION.ALLUSERS);
     } catch (e) {
       throw new InternalServerErrorException('test query error', e);
     }

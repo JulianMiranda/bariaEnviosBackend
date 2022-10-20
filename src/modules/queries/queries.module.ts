@@ -7,6 +7,7 @@ import { OrderSchema } from '../../schemas/order.schema';
 import { QueriesController } from './queries.controller';
 import { QueriesRepository } from './queries.repository';
 import { CategoryAnalyticsSchema } from 'src/schemas/category-analytics.schema';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
   imports: [
@@ -32,6 +33,8 @@ import { CategoryAnalyticsSchema } from 'src/schemas/category-analytics.schema';
         schema: CategoryAnalyticsSchema,
       },
     ]),
+
+    NotificationsModule,
   ],
 
   controllers: [QueriesController],

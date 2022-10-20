@@ -49,6 +49,7 @@ export class NotificationsRepository {
         notification: {
           title,
           body,
+          sound: 'default',
         },
 
         token,
@@ -226,6 +227,47 @@ export class NotificationsRepository {
         console.log('batch', batch); */
       /*  AWSService.topicARN(batch.token, batch.notification); */
       /* } */
+    } catch (e) {
+      throw new InternalServerErrorException(
+        'create notification Database error',
+        e,
+      );
+    }
+  }
+
+  async allUsers(type: NOTIFICATION): Promise<any> {
+    try {
+      const allUsers = await this.usersDb
+        .find({}, { notificationTokens: 1 })
+        .lean();
+
+      const notificationsArray = [];
+
+      for (const user of allUsers) {
+        notificationsArray.push({
+          user: user._id,
+          title: 'Notificación Prueba',
+          body: `Esta es un notificación creada para revisar que esten llegagando las notificaciones a los dispositivos`,
+          type,
+          identifier: user._id,
+          notificationTokens: user.notificationTokens,
+        });
+      }
+
+      const pushNotifications = notificationsArray.map((item) => {
+        const { title, email, user, body } = item;
+        return item.notificationTokens.map((token: string) => ({
+          notification: {
+            title,
+            body,
+          },
+          token,
+        }));
+      });
+
+      if (allUsers.length !== 0) {
+        FirebaseService.sendPushNotifications(flatten(pushNotifications));
+      }
     } catch (e) {
       throw new InternalServerErrorException(
         'create notification Database error',
