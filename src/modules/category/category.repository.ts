@@ -178,20 +178,49 @@ export class CategoryRepository {
   }
 
   async setTextSearch(id: string): Promise<void> {
-    console.log('setTextSearch', id);
-    const offersQuery = await this.categoryDb.aggregate(searchText(id));
+    const categoryQuery = await this.categoryDb.aggregate(searchText(id));
 
-    if (offersQuery.length === 0) return;
-
+    if (categoryQuery.length === 0) return;
+    const texto = this.findTilde(categoryQuery[0].textSearch);
     await this.categoryDb.bulkWrite(
-      offersQuery.map(({ _id, textSearch }) => ({
+      categoryQuery.map(({ _id, textSearch }) => ({
         updateOne: {
           filter: { _id },
           update: {
-            $set: { textSearch },
+            $set: { textSearch: texto },
           },
         },
       })),
     );
+  }
+
+  findTilde(a: string): any {
+    const b = a.split(' ');
+    const newWords = [];
+    b.map((word) => {
+      for (let i = 0; i < word.length; i++) {
+        const caracter = word.charAt(i);
+        if (caracter === 'á' || caracter === 'Á') {
+          const re = /Á/gi;
+          newWords.push(word.replace(re, 'a'));
+        } else if (caracter === 'é' || caracter === 'É') {
+          const re = /É/gi;
+          newWords.push(word.replace(re, 'e'));
+        } else if (caracter === 'í' || caracter === 'Í') {
+          console.log('Hay caracter: ' + word);
+          const re = /Í/gi;
+          newWords.push(word.replace(re, 'i'));
+        } else if (caracter === 'ó' || caracter === 'Ó') {
+          const re = /Ó/gi;
+          newWords.push(word.replace(re, 'o'));
+        } else if (caracter === 'ú' || caracter === 'Ú') {
+          const re = /Ú/gi;
+          newWords.push(word.replace(re, 'u'));
+        } else {
+          if (!newWords.includes(word)) newWords.push(word);
+        }
+      }
+    });
+    return newWords.join(' ');
   }
 }

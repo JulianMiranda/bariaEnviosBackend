@@ -6,7 +6,8 @@ import { schemaOptions } from '../utils/index';
 export const OrderSchema = new mongoose.Schema(
   {
     status: { type: Boolean, default: true, index: true },
-    owner: { type: String, default: 'Julian' },
+    owner: { type: String, default: 'baria' },
+    order: { type: String, index: true },
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', index: true },
     trackcode: {
       type: mongoose.Schema.Types.ObjectId,
